@@ -80,7 +80,7 @@ export default function Home({ postsPagination }: HomeProps) {
 
         <div className={styles.posts}>
           {posts.map(post => (
-            <Link key={post.uid} href={`/post/${post.uid}`} legacyBehavior>
+            <Link key={post.uid} href={`/post/${post.uid}`}>
               <a className={styles.post}>
                 <strong>{post.data.title}</strong>
                 <p>{post.data.subtitle}</p>
