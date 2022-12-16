@@ -1,5 +1,22 @@
 .posts {
     margin-top: 2rem;
+    
+    > a{
+        display: block;
+
+        & + a {
+            margin-top: 4rem;
+        }
+    }
+    
+    button {
+        border: none;
+        background: none;
+        font-weight: 600;
+        font-size: 1.125rem;
+        color: var(--highlight);
+        margin-top: 4rem;
+    }
 }
 
 .posts {
