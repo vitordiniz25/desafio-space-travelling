@@ -1,6 +1,7 @@
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { GetStaticPaths, GetStaticProps } from 'next';
+import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { RichText } from 'prismic-dom';
 import { FiCalendar, FiClock, FiUser } from 'react-icons/fi';
@@ -32,11 +33,11 @@ interface PostProps {
   post: Post;
 }
 
-export default function Post( {post }: PostProps) {
+export default function Post({ post }: PostProps) {
   const router = useRouter();
 
   if (router.isFallback) {
-    return <h1>Carregando...</h1>
+    return <h1>Carregando...</h1>;
   }
 
   const totalWords = post.data.content.reduce((total, contentItem) => {
@@ -44,21 +45,25 @@ export default function Post( {post }: PostProps) {
     const wordsTime = RichText.asText(contentItem.body).split(/\s+/).length;
 
     return total + headingTime + wordsTime;
-  }, 0)
-
+  }, 0);
   const readTime = Math.ceil(totalWords / 200);
 
-  const formattedDate = format(new Date(post.first_publication_date), 
-    'dd MMM yyyy', 
+  const formattedDate = format(
+    new Date(post.first_publication_date),
+    'dd MMM yyyy',
     {
-      locale: ptBR
+      locale: ptBR,
     }
-  )
+  );
 
-  return(
+  return (
     <>
+      <Head>
+        <title>{post.data.title} | spacetraveling</title>
+      </Head>
+
       <Header />
-      <img src={post.data.banner.url} alt="Banner" className={styles.banner}/>
+      <img src={post.data.banner.url} alt="Banner" className={styles.banner} />
       <main className={commonStyles.container}>
         <div className={styles.post}>
           <div className={styles.postTop}>
@@ -84,13 +89,14 @@ export default function Post( {post }: PostProps) {
               <article key={content.heading}>
                 <h2>{content.heading}</h2>
                 <div
-                  className={styles.postContent} 
+                  className={styles.postContent}
+                  // eslint-disable-next-line react/no-danger
                   dangerouslySetInnerHTML={{
-                    __html: RichText.asHtml(content.body)
+                    __html: RichText.asHtml(content.body),
                   }}
                 />
               </article>
-            )
+            );
           })}
         </div>
       </main>
@@ -106,18 +112,19 @@ export const getStaticPaths: GetStaticPaths = async () => {
     return {
       params: {
         slug: post.uid,
-      }
-    }
-  })
+      },
+    };
+  });
 
   return {
     paths,
     fallback: true,
-  }
+  };
 };
 
-export const getStaticProps: GetStaticProps = async ({params }) => {
+export const getStaticProps: GetStaticProps = async ({ params }) => {
   const { slug } = params;
+
   const prismic = getPrismicClient({});
   const response = await prismic.getByUID('posts', String(slug));
 
@@ -126,5 +133,5 @@ export const getStaticProps: GetStaticProps = async ({params }) => {
       post: response,
     },
     revalidate: 1800,
-  }
+  };
 };
